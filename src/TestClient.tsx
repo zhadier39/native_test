@@ -2,10 +2,11 @@ import logo from './logo.svg';
 import React from 'react';
 import './App.css';
 import { useContext, useEffect, useState } from 'react';
-import HyperengageContext from './context/HyperengageClient';
+import HyperengageContext from './context/HyperengageClient.ts';
 
 const TestClient = () => {
-  const hyperengageClient = useContext(HyperengageContext);
+  const hyperengageClient: any = useContext(HyperengageContext);
+
   if (!hyperengageClient) {
     throw new Error('HyperengageClient is not provided');
   };
@@ -87,7 +88,7 @@ const TestClient = () => {
   const accountIdentify = ()=> {
     const rand = Math.floor(Math.random() * accounts.length).toString();
     const account = accounts[rand];
-    hyperengageClient.account_identify({
+    hyperengageClient.identify_account({
     account_id: rand, 
     traits: {
     name: account,
@@ -100,7 +101,7 @@ const TestClient = () => {
 
 const userIdentify = ()=> {
   const user = users[Math.floor(Math.random() * users.length)];
-  hyperengageClient.user_identify({
+  hyperengageClient.identify_user({
     user_id: user.id,
     traits: {
       testblablabla: "test",
