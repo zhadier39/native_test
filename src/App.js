@@ -1,50 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
-import { useEffect } from 'react';
+import React from 'react'
+import HyperengageContext from './HyperengageContext'
+import { hyperengageClient } from '@hyperengage/sdk-js'
+import TestClient from './TestClient'
 
-function App() {
-
-  const accountIdentify = ()=> {
-  window.hyperengage(
-    'account', 
-    { account_id: '122345', 
-    traits: {
-    name: 'Hyperengage',
-  }
-});
-};
-
-
-const userIdentify = ()=> {
-window.hyperengage(
-  'user', {
-    user_id: '1001',
-    traits: {
-      name: "Ramos",
-      email: "ramos+123@rocketmail.io"
-    }
-});
-};
-
+const App = ({children}) => {
+  const heClient = hyperengageClient({
+    key: "hjs_46886de06049396673b4efd57bbf3e2c",
+    workspace_key: "IeHcePg171",
+    tracking_host: "http://localhost:8000",
+  });
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <button type='button' onClick={accountIdentify}>Identify Account</button>
-      <button type='button' onClick={userIdentify}>Identify User</button>
-      <button type='button' onClick={() => {
-        window.hyperengage('track','test_button_click',{properties: {app: "Test-1"}})
-      }}>Track Event</button>
-      <button type='button' onClick={() => {
-        window.hyperengage('reset');
-      }}>Reset cookies and user data
-      </button>
-      </header>
+  <div className='app'>
+    <HyperengageContext.Provider value={heClient}>
+      <TestClient />
+    </HyperengageContext.Provider>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
