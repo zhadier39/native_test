@@ -4,8 +4,8 @@ import { hyperengageClient } from '@hyperengage/sdk-js'
 import TestClient from './TestClient.tsx'
 
 const heClient = hyperengageClient({
-  key: "hjs_46886de06049396673b4efd57bbf3e2c",
-  workspace_key: "IeHcePg171",
+  key: "hjs_dfa0c4d07a7bb2c183f1a163c02eb43d",
+  workspace_key: "1VxmCzCLHc",
   tracking_host: "http://localhost:8000",
 });
 console.log('heClient', heClient);
