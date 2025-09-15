@@ -4,18 +4,18 @@ import { hyperengageClient } from '@hyperengage/sdk-js'
 import TestClient from './TestClient.tsx'
 
 const heClient = hyperengageClient({
-  key: "hjs_dfa0c4d07a7bb2c183f1a163c02eb43d",
-  workspace_key: "1VxmCzCLHc",
+  key: "hjs_38a6199575b05da04d6d9c470048e167",
+  workspace_key: "MsHGstpPlw",
   tracking_host: "http://localhost:8000",
 });
 console.log('heClient', heClient);
-const App = ({children}) => {
- 
+const App = ({ children }) => {
+
   return (
-  <div className='app'>
-    <HyperengageContext.Provider value={heClient}>
-      <TestClient />
-    </HyperengageContext.Provider>
+    <div className='app'>
+      <HyperengageContext.Provider value={heClient}>
+        <TestClient />
+      </HyperengageContext.Provider>
     </div>
   )
 }
