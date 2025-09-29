@@ -207,10 +207,34 @@ const TestClient = () => {
   const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
   const randomFloat = (min: number, max: number) => Math.random() * (max - min) + min;
   const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-  const randomDateInPastYear = () => {
+  const randomDateInPast6Months = () => {
     const now = Date.now();
-    const oneYearMs = 365 * 24 * 60 * 60 * 1000;
-    const offset = Math.floor(Math.random() * oneYearMs);
+    const sixMonthsMs = 180 * 24 * 60 * 60 * 1000; // 6 months ≈ 180 days
+    const offset = Math.floor(Math.random() * sixMonthsMs);
+    return new Date(now - offset);
+  };
+
+  // Generate timestamps with different recency patterns for more realistic data
+  const randomDateWithRecencyBias = () => {
+    const now = Date.now();
+    const sixMonthsMs = 180 * 24 * 60 * 60 * 1000;
+    
+    // Create a bias toward more recent events (exponential decay)
+    const bias = Math.random();
+    let timeWeight;
+    
+    if (bias < 0.4) {
+      // 40% of events in last 30 days
+      timeWeight = Math.random() * 0.17; // 30/180 ≈ 0.17
+    } else if (bias < 0.7) {
+      // 30% of events in last 90 days
+      timeWeight = Math.random() * 0.5; // 90/180 = 0.5
+    } else {
+      // 30% of events distributed across full 6 months
+      timeWeight = Math.random();
+    }
+    
+    const offset = Math.floor(timeWeight * sixMonthsMs);
     return new Date(now - offset);
   };
 
@@ -259,7 +283,7 @@ const TestClient = () => {
     const plan = pick(planTiers);
     const status = pick(subscriptionStatuses);
     const country = pick(countries);
-    const createdAt = randomDateInPastYear();
+    const createdAt = randomDateInPast6Months();
     const id = `ACC-${idx.toString().padStart(5, '0')}`;
     return {
       id,
@@ -342,7 +366,7 @@ const TestClient = () => {
       'BST', 'CAT', 'EAT', 'WAT', 'AST', 'NST', 'HST', 'AKST', 'PDT', 'MDT', 'CDT', 'EDT'
     ]);
     const avatar_url = `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(full)}`;
-    const createdAt = randomDateInPastYear();
+    const createdAt = randomDateInPast6Months();
     return {
       id,
       account_id: account.id,
@@ -373,7 +397,7 @@ const TestClient = () => {
 
   const makeEventPayload = (event: string, account: Account, user?: User) => {
     // Include top-level timestamp if backend accepts it; otherwise keep in properties.created_at
-    const ts = randomDateInPastYear();
+    const ts = randomDateWithRecencyBias();
     const baseProps: Record<string, any> = {
       account_id: account.id,
       account_name: account.name,
@@ -509,7 +533,10 @@ const TestClient = () => {
 
     return {
       timestamp: ts.toISOString(),
-      properties: baseProps,
+      properties: {
+        ...baseProps,
+        timestamp: ts.toISOString(), // Include timestamp in both main body and properties
+      },
     };
   };
 
