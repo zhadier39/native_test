@@ -4,6 +4,36 @@ import './App.css';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import HyperengageContext from './context/HyperengageClient.ts';
 
+/*
+ * PRODUCTION IMPLEMENTATION GUIDE
+ * ==============================
+ *
+ * This file contains synthetic data generation for testing, but here's what
+ * you actually need to implement in your SaaS webapp:
+ *
+ * 1. AUTO-DETECTED TRAITS (Browser/JavaScript)
+ *    - viewport_width/height, user_agent, device_type, browser_name, os_primary
+ *    - timezone_offset, screen_resolution, connection_type
+ *    - session_duration, page_load_time
+ *
+ * 2. WEBAPP CONFIGURATION (Your code needs this)
+ *    - page_viewed events with custom properties
+ *    - button_clicked with element selectors
+ *    - form_submitted/abandoned tracking
+ *    - error_encountered with error context
+ *    - feature_adopted when users first use features
+ *
+ * 3. BACKEND TRAITS (From your API/database)
+ *    - subscription_status, plan_tier, mrr, health_score
+ *    - user roles, department, account_id
+ *    - last_login_at, total_sessions, features_used_count
+ *
+ * 4. COMPUTED METRICS (Need processing pipeline)
+ *    - engagement_score, churn_risk, user_segment
+ *    - onboarding_completion_rate, feature_adoption_rate
+ *    - time_to_first_value, expansion_opportunities
+ */
+
 const TestClient = () => {
   const hyperengageClient: any = useContext(HyperengageContext);
 
@@ -116,80 +146,141 @@ const TestClient = () => {
 
   const eventCatalog = useMemo(
     () => [
-      // Account lifecycle
-      'account_created', 'account_onboarded', 'account_tag_added', 'account_tag_removed', 'owner_changed',
-      // Subscription & billing
-      'trial_started', 'trial_extended', 'trial_converted', 'subscription_upgraded', 'subscription_downgraded', 'renewal_due', 'renewal_closed_won', 'renewal_closed_lost',
-      'billing_invoice_generated', 'billing_invoice_paid', 'billing_payment_failed',
-      // Integrations
-      'integration_connected', 'integration_error', 'integration_mapping_updated',
-      'integration_sync_started', 'integration_sync_completed', 'integration_sync_failed',
-      // Workspace & settings
-      'workspace_member_invited', 'workspace_member_joined', 'permission_changed', 'role_assigned', 'workspace_setting_updated',
-      // Product objects
-      'success_plan_created', 'success_plan_updated', 'segment_created', 'segment_rule_updated', 'view_created', 'view_filter_updated',
-      'dashboard_viewed', 'dashboard_widget_added',
-      // Signals
-      'signal_created', 'signal_acknowledged', 'signal_resolved',
-      // Playbooks, tasks, meetings
-      'playbook_created', 'playbook_run', 'cs_playbook_step_assigned', 'cs_playbook_step_completed', 'task_created', 'task_completed',
-      'meeting_scheduled', 'meeting_held',
-      // User lifecycle & sessions
-      'user_invited', 'user_activated', 'user_logged_in', 'session_started', 'session_heartbeat', 'session_ended', 'user_logged_out',
-      // Emails & comms
-      'email_sent', 'email_opened', 'email_clicked', 'email_bounced', 'slack_notification_sent', 'slack_notification_clicked',
-      // Feature + usage
-      'feature_adopted', 'feature_dropoff', 'usage_metric_reported',
-      // NPS & surveys
-      'nps_survey_sent', 'nps_response_received', 'nps_detractor_alert_created',
-      // API, security, data
-      'api_rate_limit_exceeded', 'api_key_rotated', 'security_login_failed', 'security_mfa_challenge',
-      'data_export_requested', 'data_export_completed', 'gdpr_request_received', 'gdpr_request_completed',
-      // Webhooks
-      'webhook_delivered', 'webhook_failed', 'webhook_retried', 'webhook_enabled', 'webhook_disabled'
+      // CORE PRODUCT EVENTS (What SaaS products typically send to Segment)
+
+      // User Lifecycle & Authentication
+      'user_signed_up', 'user_logged_in', 'user_logged_out', 'password_reset_requested',
+
+      // Page Views & Navigation
+      'page_viewed', 'navigation_clicked', 'tab_switched', 'deep_link_opened',
+
+      // Feature Usage & Interactions
+      'feature_viewed', 'feature_used', 'button_clicked', 'form_started', 'form_submitted', 'form_abandoned',
+      'search_performed', 'filter_applied', 'sort_applied', 'export_requested',
+
+      // Product-Specific Actions (Signals, Playbooks, etc.)
+      'signal_created', 'signal_viewed', 'signal_acknowledged', 'signal_resolved',
+      'playbook_created', 'playbook_run', 'playbook_step_completed',
+      'task_created', 'task_completed', 'task_assigned',
+
+      // Integrations & API
+      'integration_connected', 'integration_error', 'integration_sync_started', 'integration_sync_completed',
+      'api_call_made', 'api_rate_limit_hit', 'webhook_created', 'webhook_fired',
+
+      // Onboarding & Education
+      'onboarding_started', 'onboarding_step_completed', 'onboarding_completed',
+      'tutorial_viewed', 'help_article_viewed', 'tooltip_viewed',
+
+      // Settings & Configuration
+      'settings_updated', 'notification_preference_changed', 'profile_updated',
+
+      // Errors & Issues
+      'error_encountered', 'validation_error', 'permission_denied', 'page_load_error',
+
+      // Communication & Collaboration
+      'email_sent', 'email_opened', 'email_clicked', 'notification_sent',
+      'comment_added', 'file_uploaded', 'team_member_invited',
+
+      // Account & Billing (Basic - detailed billing from Stripe/other systems)
+      'account_created', 'billing_info_updated', 'plan_viewed',
+
+      // Sessions & Engagement
+      'session_started', 'session_ended', 'idle_warning_shown',
+
+      // Support & Feedback
+      'support_ticket_created', 'feedback_submitted', 'bug_report_sent',
+
+      // Content & Assets
+      'report_generated', 'dashboard_created', 'dashboard_shared', 'view_created', 'view_saved'
     ],
     []
   );
 
   const eventWeights: Record<string, number> = useMemo(() => ({
-    // High frequency
-    user_logged_in: 6,
-    session_started: 6,
-    session_heartbeat: 10,
-    session_ended: 6,
-    dashboard_viewed: 4,
-    feature_adopted: 4,
-    usage_metric_reported: 5,
-    task_created: 3,
-    task_completed: 3,
-    email_sent: 4,
-    email_opened: 5,
-    email_clicked: 3,
-    meeting_scheduled: 1,
-    meeting_held: 1,
-    // Medium
-    signal_created: 3,
-    signal_acknowledged: 2,
-    signal_resolved: 2,
-    playbook_run: 2,
-    success_plan_created: 1,
-    segment_created: 1,
-    view_created: 1,
-    // Low/edge
-    api_rate_limit_exceeded: 0.3,
+    // HIGH FREQUENCY - Core user interactions
+    page_viewed: 12,
+    button_clicked: 10,
+    navigation_clicked: 8,
+    tab_switched: 6,
+    user_logged_in: 4,
+    session_started: 4,
+    session_ended: 4,
+
+    // MEDIUM FREQUENCY - Feature usage
+    feature_viewed: 5,
+    feature_used: 4,
+    search_performed: 4,
+    filter_applied: 3,
+    form_submitted: 3,
+    form_started: 2,
+    signal_viewed: 3,
+    task_created: 2,
+    task_completed: 2,
+
+    // MEDIUM FREQUENCY - Product workflows
+    signal_created: 2,
+    signal_acknowledged: 1.5,
+    signal_resolved: 1.5,
+    playbook_created: 1,
+    playbook_run: 1.5,
+    playbook_step_completed: 2,
+    integration_connected: 1,
+    export_requested: 1.5,
+
+    // LOWER FREQUENCY - Setup and configuration
+    onboarding_started: 0.8,
+    onboarding_step_completed: 1.2,
+    onboarding_completed: 0.6,
+    settings_updated: 1,
+    notification_preference_changed: 0.8,
+    profile_updated: 0.8,
+    tutorial_viewed: 1.5,
+    help_article_viewed: 1,
+    tooltip_viewed: 2,
+
+    // LOWER FREQUENCY - Communication
+    email_sent: 2,
+    email_opened: 1.5,
+    email_clicked: 1,
+    notification_sent: 1.5,
+    comment_added: 1.5,
+    team_member_invited: 0.8,
+
+    // LOWER FREQUENCY - Errors and issues
+    error_encountered: 1,
+    validation_error: 1.5,
+    permission_denied: 0.5,
+    page_load_error: 0.3,
+
+    // LOWER FREQUENCY - Advanced features
+    api_call_made: 2,
+    api_rate_limit_hit: 0.2,
+    webhook_created: 0.5,
+    webhook_fired: 1,
+    integration_error: 0.3,
     integration_sync_started: 0.8,
     integration_sync_completed: 0.8,
-    integration_sync_failed: 0.2,
-    billing_invoice_generated: 0.4,
-    billing_invoice_paid: 0.4,
-    billing_payment_failed: 0.1,
-    renewal_due: 0.2,
-    renewal_closed_won: 0.2,
-    renewal_closed_lost: 0.05,
-    nps_survey_sent: 0.3,
-    nps_response_received: 0.3,
-    webhook_failed: 0.2,
-    webhook_retried: 0.2,
+
+    // LOW FREQUENCY - Account and support
+    user_signed_up: 0.5,
+    account_created: 0.3,
+    billing_info_updated: 0.4,
+    plan_viewed: 0.6,
+    support_ticket_created: 0.8,
+    feedback_submitted: 0.6,
+    bug_report_sent: 0.4,
+    report_generated: 1,
+    dashboard_created: 0.8,
+    dashboard_shared: 0.6,
+    view_created: 1,
+    view_saved: 1.5,
+    password_reset_requested: 0.3,
+    user_logged_out: 3,
+    form_abandoned: 1.5,
+    sort_applied: 2,
+    file_uploaded: 1,
+    idle_warning_shown: 0.5,
+    deep_link_opened: 0.8
   }), []);
 
   const pickWeighted = (items: string[], weights: Record<string, number>) => {
@@ -212,6 +303,16 @@ const TestClient = () => {
     const sixMonthsMs = 180 * 24 * 60 * 60 * 1000; // 6 months ≈ 180 days
     const offset = Math.floor(Math.random() * sixMonthsMs);
     return new Date(now - offset);
+  };
+
+  // Generate random ISO timestamp from 3 months ago to 1 month in the future
+  const randomUTCTime = () => {
+    const now = Date.now();
+    const threeMonthsAgo = now - (90 * 24 * 60 * 60 * 1000); // 90 days ago
+    const oneMonthFuture = now + (30 * 24 * 60 * 60 * 1000);  // 30 days future
+    const timeRange = oneMonthFuture - threeMonthsAgo;
+    const randomTime = threeMonthsAgo + Math.random() * timeRange;
+    return new Date(randomTime).toISOString();
   };
 
   // Generate timestamps with different recency patterns for more realistic data
@@ -285,11 +386,18 @@ const TestClient = () => {
     const country = pick(countries);
     const createdAt = randomDateInPast6Months();
     const id = `ACC-${idx.toString().padStart(5, '0')}`;
+
+    // Realistic account traits that a SaaS product would send to Segment
+    // No computed metrics - those come from CRM/billing systems or data warehouse
+    const integrationsCount = randInt(0, 5); // More realistic
+    const usersCount = randInt(1, 25); // More realistic for SMB/SaaS
+
     return {
       id,
       name,
       domain,
       traits: {
+        // Basic company info
         name,
         website: `https://www.${domain}`,
         domain,
@@ -298,9 +406,36 @@ const TestClient = () => {
         mrr,
         currency: 'USD',
         industry: pick(industries),
+
+        // Company size (useful for segmentation)
         employee_count: emp,
+
+        // Geographic
         location_country: country,
+
+        // Account creation
         signup_date: createdAt.toISOString(),
+        signup_source: pick(['direct', 'referral', 'advertisement', 'search', 'social']),
+
+        // Usage metrics (what the product can observe)
+        total_users: usersCount,
+        integrations_connected: integrationsCount,
+        features_used: randInt(1, 8), // Features they've actually accessed
+
+        // Account lifecycle
+        account_type: pick(['trial', 'free', 'paid']),
+        last_login_date: randomDateWithRecencyBias().toISOString(),
+
+        // Support interaction (what the product knows)
+        support_tickets_created: randInt(0, 5),
+
+        // Communication preferences
+        email_marketing_opt_in: Math.random() < 0.6,
+        product_updates_opt_in: Math.random() < 0.8,
+
+        // Technical context
+        primary_integration: integrationsCount > 0 ?
+          pick(['Salesforce', 'HubSpot', 'Slack', 'Zapier']) : null,
       },
     };
   };
@@ -367,6 +502,14 @@ const TestClient = () => {
     ]);
     const avatar_url = `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(full)}`;
     const createdAt = randomDateInPast6Months();
+
+    // Realistic user traits that a SaaS product would send to Segment
+    // Focus on what the product can observe directly
+    const lastActivity = randomDateWithRecencyBias();
+    const deviceType = pick(['desktop', 'laptop', 'tablet', 'mobile']);
+    const browser = pick(['Chrome', 'Firefox', 'Safari', 'Edge']);
+    const os = pick(['Windows', 'macOS', 'Linux', 'iOS', 'Android']);
+
     return {
       id,
       account_id: account.id,
@@ -378,19 +521,46 @@ const TestClient = () => {
       title,
       avatar_url,
       traits: {
+        // Basic user profile
         first_name: first,
         last_name: last,
-        full_name: full,
         name: full,
         email,
         title,
-        role,
         department: dept,
-        timezone: tz,
-        avatar_url,
+
+        // Account relationship
         account_id: account.id,
-        last_seen_at: createdAt.toISOString(),
-        is_admin: Math.random() < 0.1,
+        account_role: pick(['admin', 'member', 'viewer']),
+
+        // User lifecycle
+        signup_date: createdAt.toISOString(),
+        last_seen_at: lastActivity.toISOString(),
+        email_verified: Math.random() < 0.95,
+
+        // User preferences (what they set in the app)
+        timezone: tz,
+        preferred_language: pick(['en', 'es', 'fr', 'de']),
+        theme_preference: pick(['light', 'dark', 'auto']),
+        notifications_enabled: Math.random() < 0.7,
+
+        // Device context (observed)
+        device_primary: deviceType,
+        browser_primary: browser,
+        os_primary: os,
+
+        // Feature usage (observed by product)
+        features_used: randInt(1, 8),
+        onboarding_completed: Math.random() < 0.8,
+        tutorial_viewed: Math.random() < 0.6,
+
+        // Support interaction (observed)
+        support_tickets_created: randInt(0, 3),
+        feedback_submitted: Math.random() < 0.3,
+
+        // Authentication status
+        mfa_enabled: Math.random() < 0.4,
+        last_password_change: new Date(lastActivity.getTime() - randInt(30, 180) * 24 * 60 * 60 * 1000).toISOString(),
       },
     };
   };
@@ -412,122 +582,188 @@ const TestClient = () => {
       baseProps.department = user.traits.department;
     }
 
-    // Enrich based on event
-    if (event === 'email_sent' || event === 'email_opened' || event === 'email_clicked' || event === 'email_bounced') {
+    // Enrich based on event - realistic SaaS product analytics
+    if (event === 'page_viewed') {
       Object.assign(baseProps, {
-        campaign_id: `CMP-${randInt(1000, 9999)}`,
-        template: pick(['onboarding_welcome', 'health_check', 'qbr_invite', 'renewal_reminder']),
-        subject: pick([
-          'Welcome to Hyperengage',
-          'Let’s set up your signals',
-          'Your QBR is coming up',
-          'Renewal reminder',
-        ]),
-        bounce_reason: event === 'email_bounced' ? pick(['mailbox_full', 'invalid_address', 'blocked']) : undefined,
+        page_path: pick(['/', '/dashboard', '/accounts', '/users', '/signals', '/playbooks', '/settings', '/integrations']),
+        page_title: pick(['Dashboard', 'Accounts', 'Users', 'Signals', 'Playbooks', 'Settings', 'Integrations']),
+        referrer: pick(['direct', 'email', 'search', 'referral']),
+        load_time_ms: randInt(200, 3000), // Realistic load times
+      });
+    } else if (event === 'button_clicked') {
+      Object.assign(baseProps, {
+        button_text: pick(['Save', 'Create', 'Delete', 'Edit', 'Export', 'Send', 'Update', 'Cancel']),
+        button_location: pick(['header', 'sidebar', 'main_content', 'modal', 'toolbar']),
+        element_id: `btn-${randInt(1000, 9999)}`,
+      });
+    } else if (event === 'form_submitted' || event === 'form_started' || event === 'form_abandoned') {
+      Object.assign(baseProps, {
+        form_name: pick(['account_create', 'user_invite', 'signal_config', 'integration_setup', 'settings_update']),
+        form_type: pick(['modal', 'page', 'sidebar']),
+        ...(event === 'form_submitted' && { fields_completed: randInt(3, 12) }),
+        ...(event === 'form_abandoned' && { abandonment_step: randInt(1, 5) }),
+      });
+    } else if (event === 'search_performed') {
+      Object.assign(baseProps, {
+        search_term: pick(['error', 'integration', 'signal', 'account', 'user', 'playbook']),
+        search_type: pick(['global', 'accounts', 'users', 'signals', 'playbooks']),
+        results_count: randInt(0, 50), // More realistic result counts
+        search_source: pick(['header_search', 'page_search']),
+      });
+    } else if (event === 'filter_applied' || event === 'sort_applied') {
+      Object.assign(baseProps, {
+        filter_type: pick(['date', 'status', 'type', 'owner', 'priority']),
+        filter_value: pick(['active', 'inactive', 'pending', 'completed', 'high', 'medium', 'low']),
+        context: pick(['accounts', 'users', 'signals', 'tasks', 'playbooks']),
+      });
+    } else if (event === 'feature_viewed' || event === 'feature_used') {
+      Object.assign(baseProps, {
+        feature_name: pick(['signals', 'playbooks', 'integrations', 'reports', 'settings']),
+        feature_category: pick(['core', 'advanced', 'integrations', 'analytics']),
+        time_spent_seconds: event === 'feature_used' ? randInt(30, 600) : undefined,
       });
     } else if (event.startsWith('signal_')) {
       Object.assign(baseProps, {
         signal_id: `SIG-${randInt(10000, 99999)}`,
-        signal_type: pick(['usage_drop', 'vip_login', 'integration_error', 'milestone_reached']),
+        signal_type: pick(['usage_drop', 'milestone', 'error', 'engagement']),
         severity: pick(['low', 'medium', 'high']),
       });
-    } else if (event === 'integration_connected' || event === 'integration_error') {
-      Object.assign(baseProps, {
-        integration_name: pick(['Salesforce', 'HubSpot', 'Snowflake', 'BigQuery', 'Segment', 'Zendesk']),
-      });
-    } else if (event === 'integration_sync_started' || event === 'integration_sync_completed' || event === 'integration_sync_failed') {
-      Object.assign(baseProps, {
-        integration_name: pick(['Salesforce', 'HubSpot', 'Snowflake', 'BigQuery', 'Segment', 'Zendesk']),
-        sync_id: `SYNC-${randInt(10000, 99999)}`,
-        records_processed: event === 'integration_sync_completed' ? randInt(100, 100000) : undefined,
-        error: event === 'integration_sync_failed' ? pick(['timeout', 'invalid_auth', 'rate_limited']) : undefined,
-      });
-    } else if (event === 'meeting_scheduled' || event === 'meeting_held') {
-      Object.assign(baseProps, {
-        meeting_type: pick(['qbr', 'kickoff', 'renewal', 'escalation']),
-        duration_minutes: randInt(15, 90),
-      });
-    } else if (event === 'feature_adopted') {
-      Object.assign(baseProps, {
-        feature_key: pick(['signals', 'playbooks', 'views', 'segments', 'webhooks', 'nps']),
-      });
-    } else if (event === 'health_score_calculated') {
-      Object.assign(baseProps, {
-        health_score: Math.round(randomFloat(20, 100)),
-      });
-    } else if (event === 'cs_owner_assigned' || event === 'ae_owner_assigned') {
-      Object.assign(baseProps, {
-        owner_id: `OWN-${randInt(1000, 9999)}`,
-        owner_name: pick(['Alex Kim', 'Riya Patel', 'Sam Lee', 'Chris Diaz', 'Taylor Chen']),
-      });
-    } else if (event === 'owner_changed') {
-      Object.assign(baseProps, {
-        previous_owner_id: `OWN-${randInt(1000, 9999)}`,
-        new_owner_id: `OWN-${randInt(1000, 9999)}`,
-      });
-    } else if (event.startsWith('subscription_') || event.startsWith('trial_') || event.startsWith('renewal_')) {
-      Object.assign(baseProps, {
-        previous_plan: pick(planTiers),
-        new_plan: pick(planTiers),
-        contract_term_months: pick([12, 24, 36]),
-        renewal_amount: Math.round(randomFloat(1000, 200000)),
-      });
-    } else if (event.startsWith('billing_')) {
-      Object.assign(baseProps, {
-        invoice_id: `INV-${randInt(100000, 999999)}`,
-        amount_due: Math.round(randomFloat(100, 20000)),
-        currency: 'USD',
-      });
-    } else if (event === 'usage_metric_reported') {
-      Object.assign(baseProps, {
-        metric: pick(['active_users', 'signals_created_count', 'playbooks_run_count', 'api_calls']),
-        value: randInt(1, 1000),
-        period: pick(['daily', 'weekly', 'monthly']),
-      });
-    } else if (event.startsWith('segment_')) {
-      Object.assign(baseProps, {
-        segment_id: `SEG-${randInt(1000, 9999)}`,
-        rule_count: randInt(1, 10),
-      });
-    } else if (event.startsWith('view_')) {
-      Object.assign(baseProps, {
-        view_id: `VIEW-${randInt(1000, 9999)}`,
-        filter_count: randInt(0, 5),
-      });
-    } else if (event.startsWith('dashboard_')) {
-      Object.assign(baseProps, {
-        dashboard_id: `DB-${randInt(1000, 9999)}`,
-        widget: pick(['signals', 'accounts', 'nps', 'adoption', 'revenue']),
-      });
-    } else if (event.startsWith('playbook_') || event.startsWith('cs_playbook_step_')) {
+    } else if (event.startsWith('playbook_') || event === 'playbook_step_completed') {
       Object.assign(baseProps, {
         playbook_id: `PL-${randInt(1000, 9999)}`,
-        step_id: event.startsWith('cs_playbook_step_') ? `PLS-${randInt(1000, 9999)}` : undefined,
+        playbook_name: pick(['Onboarding', 'Expansion', 'Retention', 'Adoption']),
+        step_number: randInt(1, 10),
+        total_steps: randInt(5, 15),
       });
-    } else if (event.startsWith('api_')) {
+    } else if (event.startsWith('integration_')) {
       Object.assign(baseProps, {
-        endpoint: pick(['/v1/signals', '/v1/events', '/v1/accounts', '/v1/users']),
-        http_status: pick([200, 201, 400, 401, 403, 429, 500]),
+        integration_name: pick(['Salesforce', 'HubSpot', 'Slack', 'Zapier', 'API']),
+        integration_type: pick(['crm', 'communication', 'automation', 'api']),
+        ...(event === 'integration_sync_completed' && { records_processed: randInt(10, 1000) }),
       });
-    } else if (event.startsWith('security_')) {
+    } else if (event === 'error_encountered' || event === 'validation_error' || event === 'page_load_error') {
       Object.assign(baseProps, {
-        ip: `${randInt(10, 250)}.${randInt(0, 255)}.${randInt(0, 255)}.${randInt(0, 255)}`,
-        user_agent: pick(['Chrome', 'Safari', 'Firefox', 'Edge']),
+        error_type: pick(['validation', 'network', 'permission', 'timeout', 'server']),
+        error_code: pick(['400', '401', '403', '404', '429', '500']),
+        error_location: pick(['dashboard', 'settings', 'integration', 'account_details']),
+        user_action: pick(['form_submit', 'page_load', 'api_call', 'file_upload']),
       });
-    } else if (event.startsWith('data_export_') || event.startsWith('gdpr_')) {
+    } else if (event === 'task_created' || event === 'task_completed' || event === 'task_assigned') {
       Object.assign(baseProps, {
-        export_id: `EXP-${randInt(10000, 99999)}`,
-        object_type: pick(['events', 'accounts', 'users']),
+        task_id: `TASK-${randInt(10000, 99999)}`,
+        task_type: pick(['follow_up', 'onboarding', 'review', 'escalation']),
+        priority: pick(['low', 'medium', 'high']),
+        assignee_id: `USR-${randInt(1000, 9999)}`,
       });
-    } else if (event.startsWith('webhook_')) {
+    } else if (event === 'onboarding_started' || event === 'onboarding_step_completed' || event === 'onboarding_completed') {
+      Object.assign(baseProps, {
+        onboarding_type: pick(['new_user', 'new_account', 'feature_specific']),
+        step_name: pick(['create_account', 'invite_users', 'setup_integration', 'create_signal']),
+        step_number: randInt(1, 7),
+        total_steps: 7,
+        completion_percentage: event === 'onboarding_completed' ? 100 : randInt(10, 90),
+      });
+    } else if (event === 'tutorial_viewed' || event === 'help_article_viewed' || event === 'tooltip_viewed') {
+      Object.assign(baseProps, {
+        content_type: event.split('_')[0], // tutorial, help, tooltip
+        content_id: `${event.split('_')[0]}-${randInt(1000, 9999)}`,
+        content_title: pick(['Getting Started', 'Creating Signals', 'Using Playbooks', 'Setting up Integrations']),
+        time_spent_seconds: randInt(10, 300),
+      });
+    } else if (event === 'settings_updated' || event === 'notification_preference_changed' || event === 'profile_updated') {
+      Object.assign(baseProps, {
+        setting_category: pick(['profile', 'notifications', 'security', 'integrations', 'billing']),
+        setting_name: pick(['email_notifications', 'timezone', 'language', 'avatar', 'password']),
+        previous_value: pick(['enabled', 'disabled', 'old_value']),
+        new_value: pick(['enabled', 'disabled', 'new_value']),
+      });
+    } else if (event === 'email_sent' || event === 'email_opened' || event === 'email_clicked') {
+      Object.assign(baseProps, {
+        email_type: pick(['welcome', 'notification', 'alert', 'report', 'invite']),
+        email_template: pick(['onboarding_welcome', 'weekly_report', 'alert_notification', 'user_invite']),
+        recipient_count: randInt(1, 10),
+        ...(event === 'email_clicked' && { link_clicked: pick(['dashboard_link', 'settings_link', 'help_link']) }),
+      });
+    } else if (event === 'notification_sent' || event === 'comment_added' || event === 'team_member_invited') {
+      Object.assign(baseProps, {
+        notification_type: pick(['mention', 'assignment', 'update', 'reminder']),
+        channel: pick(['in_app', 'email', 'slack']),
+        recipient_id: `USR-${randInt(1000, 9999)}`,
+      });
+    } else if (event === 'api_call_made' || event === 'api_rate_limit_hit') {
+      Object.assign(baseProps, {
+        endpoint: pick(['/api/signals', '/api/users', '/api/accounts', '/api/events']),
+        method: pick(['GET', 'POST', 'PUT', 'DELETE']),
+        response_time_ms: randInt(50, 5000),
+        response_status: event === 'api_rate_limit_hit' ? 429 : pick([200, 201, 400, 401, 404, 500]),
+      });
+    } else if (event === 'webhook_created' || event === 'webhook_fired') {
       Object.assign(baseProps, {
         webhook_id: `WH-${randInt(1000, 9999)}`,
-        attempted: event === 'webhook_retried' ? randInt(1, 5) : undefined,
-        status: pick([200, 400, 401, 404, 429, 500]),
+        webhook_url: `https://customer-app.com/webhooks/${randInt(1000, 9999)}`,
+        event_type: pick(['signal_created', 'user_joined', 'task_completed']),
+        delivery_status: event === 'webhook_fired' ? pick(['success', 'failed']) : undefined,
       });
-    } else if (event.startsWith('account_tag_')) {
+    } else if (event === 'report_generated' || event === 'export_requested') {
       Object.assign(baseProps, {
-        tag: pick(['Enterprise', 'At-risk', 'VIP', 'PLG', 'High-touch']),
+        report_type: pick(['user_activity', 'signal_performance', 'integration_status']),
+        format: pick(['csv', 'pdf', 'json']),
+        date_range: pick(['7d', '30d', '90d']),
+        filters_applied: randInt(0, 3),
+      });
+    } else if (event === 'dashboard_created' || event === 'dashboard_shared' || event === 'view_created' || event === 'view_saved') {
+      Object.assign(baseProps, {
+        object_type: event.split('_')[0], // dashboard or view
+        object_id: `${event.split('_')[0].toUpperCase()}-${randInt(1000, 9999)}`,
+        object_name: pick(['Sales Performance', 'User Engagement', 'Signal Overview', 'Integration Status']),
+        visibility: pick(['private', 'team', 'public']),
+      });
+    } else if (event === 'support_ticket_created' || event === 'feedback_submitted' || event === 'bug_report_sent') {
+      Object.assign(baseProps, {
+        ticket_type: pick(['bug', 'feature_request', 'account_issue', 'technical_support']),
+        priority: pick(['low', 'medium', 'high']),
+        category: pick(['dashboard', 'integrations', 'signals', 'playbooks', 'settings']),
+        description_length: randInt(10, 500),
+      });
+    } else if (event === 'file_uploaded' || event === 'deep_link_opened') {
+      Object.assign(baseProps, {
+        file_type: event === 'file_uploaded' ? pick(['csv', 'xlsx', 'pdf', 'image']) : undefined,
+        file_size_kb: event === 'file_uploaded' ? randInt(10, 5000) : undefined,
+        source: event === 'deep_link_opened' ? pick(['email', 'slack', 'external_link']) : undefined,
+      });
+    } else if (event === 'navigation_clicked' || event === 'tab_switched') {
+      Object.assign(baseProps, {
+        navigation_type: event.split('_')[0], // navigation or tab
+        from_section: pick(['dashboard', 'accounts', 'signals', 'settings', 'integrations']),
+        to_section: pick(['dashboard', 'accounts', 'signals', 'settings', 'integrations']),
+        navigation_method: pick(['menu_click', 'breadcrumb', 'direct_link', 'tab_click']),
+      });
+    } else if (event === 'user_signed_up' || event === 'account_created') {
+      Object.assign(baseProps, {
+        signup_method: pick(['email', 'google', 'microsoft', 'invitation']),
+        account_type: pick(['free', 'trial', 'paid']),
+        referral_source: pick(['direct', 'search', 'social', 'advertisement']),
+        user_type: pick(['admin', 'member', 'viewer']),
+      });
+    } else if (event === 'billing_info_updated' || event === 'plan_viewed') {
+      Object.assign(baseProps, {
+        billing_action: event.split('_')[0], // billing or plan
+        current_plan: pick(['free', 'starter', 'growth', 'enterprise']),
+        viewed_plan: event === 'plan_viewed' ? pick(['starter', 'growth', 'enterprise']) : undefined,
+        billing_context: pick(['upgrade', 'downgrade', 'renewal', 'cancellation']),
+      });
+    } else if (event === 'password_reset_requested' || event === 'user_logged_out') {
+      Object.assign(baseProps, {
+        logout_reason: event === 'user_logged_out' ? pick(['manual', 'timeout', 'security']) : undefined,
+        reset_method: event === 'password_reset_requested' ? pick(['email', 'sms']) : undefined,
+        session_duration: event === 'user_logged_out' ? randInt(300, 28800) : undefined, // 5 min to 8 hours
+      });
+    } else if (event === 'idle_warning_shown') {
+      Object.assign(baseProps, {
+        idle_threshold_minutes: 30,
+        warning_type: pick(['toast', 'modal', 'banner']),
+        auto_logout_seconds: 300,
+        user_response: pick(['dismissed', 'stayed_active', 'logged_out']),
       });
     }
 
@@ -536,6 +772,7 @@ const TestClient = () => {
       properties: {
         ...baseProps,
         timestamp: ts.toISOString(), // Include timestamp in both main body and properties
+        utc_time: randomUTCTime(), // Random ISO timestamp from 3 months ago to 1 month future
       },
     };
   };
@@ -630,10 +867,12 @@ const TestClient = () => {
     eventsSent = 0;
 
     let generatedUsers: User[] = [];
+    let generatedAccounts: Account[] = [];
 
     for (let a = 0; a < totalAccounts; a++) {
       if (cancelRef.current) break;
       const account = makeAccount(a);
+      generatedAccounts.push(account);
 
       // Identify account first
       try { hyperengageClient.identify_account({ account_id: account.id, traits: account.traits }); } catch { }
@@ -697,13 +936,187 @@ const TestClient = () => {
     }
 
     setUsers((prev) => prev.length ? prev : generatedUsers);
+    setAccounts((prev) => prev.length ? prev : generatedAccounts);
     setProgress(cancelRef.current ? 'Generation cancelled.' : 'Generation complete.');
     setIsGenerating(false);
+  };
+
+  // CSV Export Functions
+  const [accounts, setAccounts] = useState<Account[]>([]);
+
+  const downloadCSV = (data: string, filename: string) => {
+    const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const exportAccountsCSV = () => {
+    if (!accounts.length) {
+      alert('No accounts available. Please generate dataset first.');
+      return;
+    }
+
+    // HubSpot Company Properties
+    const headers = [
+      'Company ID',
+      'Company Name', 
+      'Company Domain Name',
+      'Website URL',
+      'Industry',
+      'Number of Employees',
+      'Annual Revenue',
+      'Country/Region',
+      'Create Date',
+      'Subscription Status',
+      'Plan Tier',
+      'Currency'
+    ];
+
+    const csvRows = [headers.join(',')];
+
+    accounts.forEach(account => {
+      const row = [
+        `"${account.id}"`,
+        `"${account.name}"`,
+        `"${account.domain}"`,
+        `"${account.traits.website}"`,
+        `"${account.traits.industry}"`,
+        `"${account.traits.employee_count}"`,
+        `"${account.traits.mrr}"`,
+        `"${account.traits.location_country}"`,
+        `"${account.traits.signup_date}"`,
+        `"${account.traits.subscription_status}"`,
+        `"${account.traits.plan_tier}"`,
+        `"${account.traits.currency}"`
+      ];
+      csvRows.push(row.join(','));
+    });
+
+    downloadCSV(csvRows.join('\n'), `companies-${new Date().toISOString().split('T')[0]}.csv`);
+  };
+
+  const exportUsersCSV = () => {
+    if (!users.length) {
+      alert('No users available. Please generate dataset first.');
+      return;
+    }
+
+    // HubSpot Contact Properties  
+    const headers = [
+      'Contact ID',
+      'Email',
+      'First Name',
+      'Last Name',
+      'Full Name',
+      'Job Title',
+      'Department',
+      'Role',
+      'Company ID',
+      'Company Name',
+      'Company Domain',
+      'Timezone',
+      'Create Date',
+      'Last Seen',
+      'Is Admin',
+      'Avatar URL'
+    ];
+
+    const csvRows = [headers.join(',')];
+
+    users.forEach(user => {
+      // Find the associated account for company info
+      const account = accounts.find(acc => acc.id === user.account_id);
+      
+      const row = [
+        `"${user.id}"`,
+        `"${user.email}"`,
+        `"${user.first_name}"`,
+        `"${user.last_name}"`,
+        `"${user.full_name}"`,
+        `"${user.title}"`,
+        `"${user.traits.department || ''}"`,
+        `"${user.traits.role || ''}"`,
+        `"${user.account_id}"`,
+        `"${account?.name || ''}"`,
+        `"${account?.domain || ''}"`,
+        `"${user.traits.timezone || ''}"`,
+        `"${new Date().toISOString()}"`,
+        `"${user.traits.last_seen_at || ''}"`,
+        `"${user.traits.is_admin || false}"`,
+        `"${user.avatar_url}"`
+      ];
+      csvRows.push(row.join(','));
+    });
+
+    downloadCSV(csvRows.join('\n'), `contacts-${new Date().toISOString().split('T')[0]}.csv`);
+  };
+
+  const exportCombinedCSV = () => {
+    if (!users.length || !accounts.length) {
+      alert('No data available. Please generate dataset first.');
+      return;
+    }
+
+    // Combined format for easy HubSpot import with company association
+    const headers = [
+      'Contact Email',
+      'First Name',
+      'Last Name',
+      'Job Title',
+      'Department',
+      'Company Name',
+      'Company Domain',
+      'Company ID',
+      'Company Website',
+      'Company Industry',
+      'Company Employee Count',
+      'Company Annual Revenue',
+      'Company Country',
+      'Company Plan Tier',
+      'Company Subscription Status'
+    ];
+
+    const csvRows = [headers.join(',')];
+
+    users.forEach(user => {
+      const account = accounts.find(acc => acc.id === user.account_id);
+      if (account) {
+        const row = [
+          `"${user.email}"`,
+          `"${user.first_name}"`,
+          `"${user.last_name}"`,
+          `"${user.title}"`,
+          `"${user.traits.department || ''}"`,
+          `"${account.name}"`,
+          `"${account.domain}"`,
+          `"${account.id}"`,
+          `"${account.traits.website}"`,
+          `"${account.traits.industry}"`,
+          `"${account.traits.employee_count}"`,
+          `"${account.traits.mrr}"`,
+          `"${account.traits.location_country}"`,
+          `"${account.traits.plan_tier}"`,
+          `"${account.traits.subscription_status}"`
+        ];
+        csvRows.push(row.join(','));
+      }
+    });
+
+    downloadCSV(csvRows.join('\n'), `contacts-with-companies-${new Date().toISOString().split('T')[0]}.csv`);
   };
 
   // No external fetch; users are generated locally during dataset generation
   useEffect(() => {
     setUsers([]);
+    setAccounts([]);
   }, []);
 
   return (
@@ -716,7 +1129,7 @@ const TestClient = () => {
         <button type='button' onClick={accountIdentify}>Identify Account</button>
         <button type='button' onClick={userIdentify}>Identify User</button>
         <button type='button' onClick={() => {
-          hyperengageClient.track("rest_created", { timestamp: new Date().toISOString(), properties: { app: "Test-1", logic: "Test-2", trial: true, test: 1, test2: "test" } })
+          hyperengageClient.track("rest_created", { timestamp: new Date().toISOString(), properties: { app: "Test-1", logic: "Test-2", trial: true, test: 1, test2: "test", utc_time: randomUTCTime() } })
         }}>Track Event</button>
         <button type='button' onClick={() => {
           hyperengageClient.reset();
@@ -726,9 +1139,9 @@ const TestClient = () => {
           <button
             type='button'
             disabled={isGenerating}
-            onClick={() => generateDataset({ accounts: 1000, usersPerAccount: 10, avgEventsPerUser: 12 })}
+            onClick={() => generateDataset({ accounts: 20, usersPerAccount: 5, avgEventsPerUser: 8 })}
           >
-            Generate realistic dataset (1000 acc / 10k users)
+            Generate test dataset (20 companies / 100 users)
           </button>
           <button
             type='button'
@@ -740,6 +1153,67 @@ const TestClient = () => {
           </button>
           <div style={{ marginTop: 8, fontSize: 12, opacity: 0.8 }}>
             {progress}
+          </div>
+        </div>
+        
+        {/* CSV Export Section */}
+        <div style={{ marginTop: 24, borderTop: '1px solid #444', paddingTop: 16 }}>
+          <h3 style={{ fontSize: 16, marginBottom: 12 }}>Export Data for HubSpot</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
+            <button
+              type='button'
+              onClick={exportAccountsCSV}
+              disabled={!accounts.length}
+              style={{ 
+                padding: '8px 16px',
+                backgroundColor: accounts.length ? '#4CAF50' : '#666',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: accounts.length ? 'pointer' : 'not-allowed',
+                width: '250px'
+              }}
+            >
+              Export Companies CSV ({accounts.length} companies)
+            </button>
+            
+            <button
+              type='button'
+              onClick={exportUsersCSV}
+              disabled={!users.length}
+              style={{ 
+                padding: '8px 16px',
+                backgroundColor: users.length ? '#2196F3' : '#666',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: users.length ? 'pointer' : 'not-allowed',
+                width: '250px'
+              }}
+            >
+              Export Contacts CSV ({users.length} contacts)
+            </button>
+            
+            <button
+              type='button'
+              onClick={exportCombinedCSV}
+              disabled={!users.length || !accounts.length}
+              style={{ 
+                padding: '8px 16px',
+                backgroundColor: (users.length && accounts.length) ? '#FF9800' : '#666',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: (users.length && accounts.length) ? 'pointer' : 'not-allowed',
+                width: '250px'
+              }}
+            >
+              Export Combined CSV (Recommended)
+            </button>
+          </div>
+          
+          <div style={{ marginTop: 12, fontSize: 11, opacity: 0.7, maxWidth: 400, textAlign: 'center' }}>
+            <strong>Combined CSV</strong> includes contacts with company data - perfect for HubSpot import where email and company ID are your sync keys.
           </div>
         </div>
       </header>

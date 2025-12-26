@@ -3,12 +3,13 @@ import HyperengageContext from './context/HyperengageClient.ts';
 import { hyperengageClient } from '@hyperengage/sdk-js'
 import TestClient from './TestClient.tsx'
 
+
 const heClient = hyperengageClient({
-  key: "hjs_38a6199575b05da04d6d9c470048e167",
-  workspace_key: "MsHGstpPlw",
+  key: "hjs_4ef055dc78846282151c3d2a683f01a5",
+  workspace_key: "bPfQiDk1Bf",
   tracking_host: "http://localhost:8000",
 });
-console.log('heClient', heClient);
+
 const App = ({ children }) => {
 
   return (
